@@ -8,6 +8,7 @@ export interface R2Config {
 }
 
 export interface AppConfig {
+  configVersion: number
   profiles: Record<string, R2Config>
   activeProfile: string
   autoRename: 'off' | 'timestamp' | 'random'
@@ -16,6 +17,9 @@ export interface AppConfig {
   theme: 'light' | 'dark'
   minimizeToTray: boolean
 }
+
+/** Bump this when you change the AppConfig schema and add a migration. */
+export const CURRENT_CONFIG_VERSION = 1
 
 export interface UploadOptions {
   targetPath: string
@@ -50,6 +54,7 @@ export interface FileData {
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
+  configVersion: CURRENT_CONFIG_VERSION,
   profiles: {
     Default: {
       endpoint: '',

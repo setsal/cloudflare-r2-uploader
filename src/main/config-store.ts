@@ -1,6 +1,6 @@
 import Store from 'electron-store'
 import { readFileSync, writeFileSync } from 'fs'
-import { AppConfig, DEFAULT_CONFIG, UploadHistoryItem } from '../common/types'
+import { AppConfig, DEFAULT_CONFIG, CURRENT_CONFIG_VERSION, UploadHistoryItem } from '../common/types'
 
 // Config store — stores app settings and profiles
 const configStore = new Store<{
@@ -21,6 +21,52 @@ const historyStore = new Store<{
     history: []
   }
 })
+
+// ---- Config Migrations ----
+// Add new migrations here when you change the AppConfig schema.
+// Each migration transforms the config from (toVersion - 1) → toVersion.
+// They run in order at startup if the stored version is behind.
+
+interface Migration {
+  toVersion: number
+  migrate: (config: Record<string, unknown>) => Record<string, unknown>
+}
+
+const migrations: Migration[] = [
+  // Example for future use:
+  // {
+  //   toVersion: 2,
+  //   migrate: (config) => {
+  //     // Add a new field with a default value
+  //     config.newField = config.newField ?? 'defaultValue'
+  //     return config
+  //   }
+  // }
+]
+
+function runMigrations(): void {
+  const raw = configStore.get('config') as Record<string, unknown>
+  const storedVersion = (typeof raw.configVersion === 'number') ? raw.configVersion : 0
+
+  if (storedVersion >= CURRENT_CONFIG_VERSION) return
+
+  let config = { ...raw }
+
+  for (const migration of migrations) {
+    if (storedVersion < migration.toVersion) {
+      console.log(`[config] Migrating config v${storedVersion} → v${migration.toVersion}`)
+      config = migration.migrate(config)
+    }
+  }
+
+  // Merge with defaults to pick up any new fields not covered by explicit migrations
+  config = { ...DEFAULT_CONFIG, ...config, configVersion: CURRENT_CONFIG_VERSION }
+  configStore.set('config', config as AppConfig)
+  console.log(`[config] Migration complete → v${CURRENT_CONFIG_VERSION}`)
+}
+
+// Run migrations on startup
+runMigrations()
 
 // ---- Config ----
 

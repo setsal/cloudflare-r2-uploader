@@ -44,14 +44,9 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
     [onFiles, disabled]
   )
 
-  const handleClick = useCallback(async () => {
+  const handleClick = useCallback(() => {
     if (disabled) return
 
-    const filePaths = await window.api.openFileDialog()
-    if (!filePaths) return
-
-    // We can't get File objects from paths directly in renderer,
-    // so we use an input element as fallback
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
