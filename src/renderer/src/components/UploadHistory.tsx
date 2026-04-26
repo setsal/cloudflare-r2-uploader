@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { UploadHistoryItem } from '@common/types'
 import { formatFileSize, formatTimestamp } from '../lib/utils'
 import { useToast } from './Toast'
+import { IconCopy, IconInbox } from './Icons'
 
 export function UploadHistory() {
   const [history, setHistory] = useState<UploadHistoryItem[]>([])
@@ -55,8 +56,8 @@ export function UploadHistory() {
 
       {history.length === 0 ? (
         <div className="history__empty">
-          <div style={{ fontSize: '32px', marginBottom: '8px' }}>📭</div>
-          No uploads yet. Drop an image to get started!
+          <IconInbox size={32} />
+          <div style={{ marginTop: '8px' }}>No uploads yet. Drop a file to get started!</div>
         </div>
       ) : (
         history.map((item, index) => (
@@ -79,7 +80,7 @@ export function UploadHistory() {
                 onClick={() => handleCopy(item.url)}
                 title="Copy URL"
               >
-                📋 Copy
+                <IconCopy size={12} /> Copy
               </button>
             </div>
           </div>

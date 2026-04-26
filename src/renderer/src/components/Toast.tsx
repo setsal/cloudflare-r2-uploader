@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext, useCallback, ReactNode } from 'react'
+import { IconCheck, IconX, IconInfo } from './Icons'
 
 interface Toast {
   id: string
@@ -57,9 +58,9 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   }, [onClose])
 
   const icons = {
-    success: '✓',
-    error: '✕',
-    info: 'ℹ'
+    success: <IconCheck size={14} />,
+    error: <IconX size={14} />,
+    info: <IconInfo size={14} />
   }
 
   return (
@@ -67,7 +68,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
       <span className="toast__icon">{icons[toast.type]}</span>
       <span className="toast__message">{toast.message}</span>
       <button className="toast__close" onClick={onClose}>
-        ✕
+        <IconX size={12} />
       </button>
     </div>
   )

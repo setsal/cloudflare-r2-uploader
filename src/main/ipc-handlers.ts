@@ -162,16 +162,10 @@ export function registerIpcHandlers() {
     if (!window) return null
 
     const result = await dialog.showOpenDialog(window, {
-      title: 'Select Image(s)',
+      title: 'Select File(s)',
       properties: ['openFile', 'multiSelections'],
       filters: [
-        {
-          name: 'Images',
-          extensions: [
-            'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg',
-            'avif', 'bmp', 'tiff', 'tif', 'ico', 'heic', 'heif'
-          ]
-        }
+        { name: 'All Files', extensions: ['*'] }
       ]
     })
 

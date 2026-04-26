@@ -1,5 +1,6 @@
 import { UploadResult } from '@common/types'
 import { formatFileSize } from '../lib/utils'
+import { IconCheck, IconX, IconCopy } from './Icons'
 
 interface UploadProgressProps {
   results: UploadResult[]
@@ -29,7 +30,7 @@ export function UploadProgress({ results, uploading }: UploadProgressProps) {
           className={`upload-result ${result.success ? '' : 'upload-result--error'}`}
         >
           <span className="upload-result__icon">
-            {result.success ? '✓' : '✕'}
+            {result.success ? <IconCheck size={14} /> : <IconX size={14} />}
           </span>
           <span className="upload-result__url">
             {result.success ? result.url : result.error}
@@ -45,7 +46,7 @@ export function UploadProgress({ results, uploading }: UploadProgressProps) {
               onClick={() => window.api.copyToClipboard(result.url!)}
               title="Copy URL"
             >
-              📋
+              <IconCopy size={14} />
             </button>
           )}
         </div>

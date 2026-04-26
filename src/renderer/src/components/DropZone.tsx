@@ -1,5 +1,5 @@
 import { useState, useCallback, DragEvent } from 'react'
-import { isImageFile } from '../lib/utils'
+import { IconUpload } from './Icons'
 
 interface DropZoneProps {
   onFiles: (files: File[]) => void
@@ -36,7 +36,7 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
 
       if (disabled) return
 
-      const files = Array.from(e.dataTransfer.files).filter(isImageFile)
+      const files = Array.from(e.dataTransfer.files)
       if (files.length > 0) {
         onFiles(files)
       }
@@ -49,11 +49,10 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
 
     const input = document.createElement('input')
     input.type = 'file'
-    input.accept = 'image/*'
     input.multiple = true
     input.onchange = () => {
       if (input.files) {
-        const files = Array.from(input.files).filter(isImageFile)
+        const files = Array.from(input.files)
         if (files.length > 0) {
           onFiles(files)
         }
@@ -74,14 +73,16 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
       tabIndex={0}
       id="dropzone"
     >
-      <div className="dropzone__icon">☁</div>
+      <div className="dropzone__icon">
+        <IconUpload size={24} />
+      </div>
       <div className="dropzone__text">
-        {isDragActive ? 'Drop images here' : 'Drag & drop images here'}
+        {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
       </div>
       <div className="dropzone__subtext">
         {isDragActive
           ? 'Release to start upload'
-          : 'or click to browse • PNG, JPG, GIF, WebP, SVG, AVIF & more'}
+          : 'or click to browse — images, documents, and more'}
       </div>
     </div>
   )

@@ -458,6 +458,42 @@ body {
   letter-spacing: 2px;
 }
 
+/* --- Secret Input with Eye Toggle --- */
+.input-secret {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-secret__input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.input-secret__toggle {
+  position: absolute;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: all var(--transition-fast);
+  padding: 0;
+  line-height: 1;
+}
+
+.input-secret__toggle:hover {
+  opacity: 1;
+  background: var(--bg-glass-hover);
+}
+
 /* --- Toggle Switch --- */
 .toggle-group {
   display: flex;

@@ -6,6 +6,7 @@ import { RenameToggle } from './components/RenameToggle'
 import { UploadProgress } from './components/UploadProgress'
 import { UploadHistory } from './components/UploadHistory'
 import { SettingsPanel } from './components/SettingsPanel'
+import { IconUpload, IconHistory, IconSettings } from './components/Icons'
 import { useConfig } from './hooks/useConfig'
 import { useUpload } from './hooks/useUpload'
 
@@ -49,9 +50,9 @@ function AppContent() {
       const failCount = uploadResults.length - successCount
 
       if (successCount > 0) {
-        const clipboardMsg = config.copyToClipboard ? ' URL copied to clipboard 📋' : ''
+        const clipboardMsg = config.copyToClipboard ? ' — URL copied to clipboard' : ''
         addToast(
-          `${successCount} image${successCount > 1 ? 's' : ''} uploaded!${clipboardMsg}`,
+          `${successCount} file${successCount > 1 ? 's' : ''} uploaded!${clipboardMsg}`,
           'success'
         )
       }
@@ -72,10 +73,10 @@ function AppContent() {
     )
   }
 
-  const tabs: { id: TabId; label: string; icon: string }[] = [
-    { id: 'upload', label: 'Upload', icon: '☁' },
-    { id: 'history', label: 'History', icon: '📋' },
-    { id: 'settings', label: 'Settings', icon: '⚙' }
+  const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
+    { id: 'upload', label: 'Upload', icon: <IconUpload size={14} /> },
+    { id: 'history', label: 'History', icon: <IconHistory size={14} /> },
+    { id: 'settings', label: 'Settings', icon: <IconSettings size={14} /> }
   ]
 
   // Show connection status
@@ -110,7 +111,7 @@ function AppContent() {
               onClick={() => setActiveTab(tab.id)}
               id={`nav-${tab.id}`}
             >
-              <span>{tab.icon}</span>
+              {tab.icon}
               {tab.label}
             </button>
           ))}

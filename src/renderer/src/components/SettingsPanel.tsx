@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react'
 import { AppConfig, R2Config } from '@common/types'
 import { useToast } from './Toast'
+import {
+  IconEye,
+  IconEyeOff,
+  IconTrash,
+  IconSun,
+  IconMoon,
+  IconLink,
+  IconCopy,
+  IconExport,
+  IconImport
+} from './Icons'
 
 interface SettingsPanelProps {
   config: AppConfig
@@ -20,6 +31,14 @@ export function SettingsPanel({
   const [testing, setTesting] = useState(false)
   const [configPath, setConfigPath] = useState('')
   const [historyPath, setHistoryPath] = useState('')
+  const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({
+    endpoint: false,
+    accessKeyId: false,
+    secretAccessKey: false,
+    bucketName: false,
+    publicUrlBase: false
+  })
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const activeProfile = config.profiles[config.activeProfile]
   const profileNames = Object.keys(config.profiles)
@@ -43,7 +62,7 @@ export function SettingsPanel({
     try {
       const result = await window.api.testConnection(activeProfile)
       if (result.success) {
-        addToast('Connection successful! ✓', 'success')
+        addToast('Connection successful!', 'success')
       } else {
         addToast(`Connection failed: ${result.error}`, 'error')
       }
@@ -79,8 +98,17 @@ export function SettingsPanel({
       addToast('Cannot delete the Default profile', 'error')
       return
     }
+    if (!confirmDelete) {
+      setConfirmDelete(true)
+      return
+    }
     await onDeleteProfile(name)
+    setConfirmDelete(false)
     addToast(`Profile "${name}" deleted`, 'info')
+  }
+
+  const toggleSecret = (field: string) => {
+    setShowSecrets((prev) => ({ ...prev, [field]: !prev[field] }))
   }
 
   const handleExport = async () => {
@@ -96,11 +124,48 @@ export function SettingsPanel({
     const result = await window.api.importConfig()
     if (result.success) {
       addToast('Settings imported successfully! Reloading...', 'success')
-      // Reload config in the app
       setTimeout(() => window.location.reload(), 500)
     } else if (result.error) {
       addToast(`Import failed: ${result.error}`, 'error')
     }
+  }
+
+  /** Renders an input with eye toggle for sensitive fields */
+  function SecretInput({
+    id,
+    field,
+    value,
+    onChange,
+    placeholder
+  }: {
+    id: string
+    field: string
+    value: string
+    onChange: (v: string) => void
+    placeholder: string
+  }) {
+    return (
+      <div className="input-secret">
+        <input
+          id={id}
+          className="form-input input-secret__input"
+          type={showSecrets[field] ? 'text' : 'password'}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          spellCheck={false}
+          autoComplete="off"
+        />
+        <button
+          type="button"
+          className="input-secret__toggle"
+          onClick={() => toggleSecret(field)}
+          title={showSecrets[field] ? 'Hide' : 'Show'}
+        >
+          {showSecrets[field] ? <IconEyeOff size={14} /> : <IconEye size={14} />}
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -115,7 +180,10 @@ export function SettingsPanel({
             <select
               id="profile-select"
               value={config.activeProfile}
-              onChange={(e) => onUpdateConfig({ activeProfile: e.target.value })}
+              onChange={(e) => {
+                onUpdateConfig({ activeProfile: e.target.value })
+                setConfirmDelete(false)
+              }}
             >
               {profileNames.map((name) => (
                 <option key={name} value={name}>
@@ -124,16 +192,6 @@ export function SettingsPanel({
               ))}
             </select>
           </div>
-
-          {config.activeProfile !== 'Default' && (
-            <button
-              className="btn btn--danger btn--sm"
-              onClick={() => handleDeleteProfile(config.activeProfile)}
-              title="Delete this profile"
-            >
-              ✕
-            </button>
-          )}
         </div>
 
         <div className="flex gap-sm items-center">
@@ -149,6 +207,36 @@ export function SettingsPanel({
             + Add
           </button>
         </div>
+
+        {config.activeProfile !== 'Default' && (
+          <div className="flex gap-sm items-center">
+            {!confirmDelete ? (
+              <button
+                className="btn btn--danger btn--sm"
+                onClick={() => handleDeleteProfile(config.activeProfile)}
+                id="delete-profile"
+              >
+                <IconTrash size={12} /> Delete "{config.activeProfile}"
+              </button>
+            ) : (
+              <>
+                <span className="text-sm text-error">Delete this profile and all its credentials?</span>
+                <button
+                  className="btn btn--danger btn--sm"
+                  onClick={() => handleDeleteProfile(config.activeProfile)}
+                >
+                  Confirm
+                </button>
+                <button
+                  className="btn btn--secondary btn--sm"
+                  onClick={() => setConfirmDelete(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* R2 Connection */}
@@ -157,38 +245,33 @@ export function SettingsPanel({
 
         <div className="form-group">
           <label className="form-label" htmlFor="endpoint">S3 API Endpoint</label>
-          <input
+          <SecretInput
             id="endpoint"
-            className="form-input"
-            type="text"
+            field="endpoint"
             value={activeProfile?.endpoint || ''}
-            onChange={(e) => updateActiveProfile({ endpoint: e.target.value })}
+            onChange={(v) => updateActiveProfile({ endpoint: v })}
             placeholder="https://<account-id>.r2.cloudflarestorage.com"
-            spellCheck={false}
           />
         </div>
 
         <div className="settings__row">
           <div className="form-group">
             <label className="form-label" htmlFor="access-key">Access Key ID</label>
-            <input
+            <SecretInput
               id="access-key"
-              className="form-input"
-              type="text"
+              field="accessKeyId"
               value={activeProfile?.accessKeyId || ''}
-              onChange={(e) => updateActiveProfile({ accessKeyId: e.target.value })}
+              onChange={(v) => updateActiveProfile({ accessKeyId: v })}
               placeholder="Access Key ID"
-              spellCheck={false}
             />
           </div>
           <div className="form-group">
             <label className="form-label" htmlFor="secret-key">Secret Access Key</label>
-            <input
+            <SecretInput
               id="secret-key"
-              className="form-input form-input--password"
-              type="password"
+              field="secretAccessKey"
               value={activeProfile?.secretAccessKey || ''}
-              onChange={(e) => updateActiveProfile({ secretAccessKey: e.target.value })}
+              onChange={(v) => updateActiveProfile({ secretAccessKey: v })}
               placeholder="••••••••"
             />
           </div>
@@ -197,26 +280,22 @@ export function SettingsPanel({
         <div className="settings__row">
           <div className="form-group">
             <label className="form-label" htmlFor="bucket-name">Bucket Name</label>
-            <input
+            <SecretInput
               id="bucket-name"
-              className="form-input"
-              type="text"
+              field="bucketName"
               value={activeProfile?.bucketName || ''}
-              onChange={(e) => updateActiveProfile({ bucketName: e.target.value })}
+              onChange={(v) => updateActiveProfile({ bucketName: v })}
               placeholder="my-bucket"
-              spellCheck={false}
             />
           </div>
           <div className="form-group">
             <label className="form-label" htmlFor="public-url">Public URL Base</label>
-            <input
+            <SecretInput
               id="public-url"
-              className="form-input"
-              type="text"
+              field="publicUrlBase"
               value={activeProfile?.publicUrlBase || ''}
-              onChange={(e) => updateActiveProfile({ publicUrlBase: e.target.value })}
+              onChange={(v) => updateActiveProfile({ publicUrlBase: v })}
               placeholder="https://images.yourdomain.com"
-              spellCheck={false}
             />
           </div>
         </div>
@@ -245,7 +324,9 @@ export function SettingsPanel({
               <span className="spinner" /> Testing...
             </>
           ) : (
-            '🔗 Test Connection'
+            <>
+              <IconLink size={14} /> Test Connection
+            </>
           )}
         </button>
       </div>
@@ -258,7 +339,7 @@ export function SettingsPanel({
         <div className="toggle-group">
           <div className="toggle-group__label">
             <span className="toggle-group__title">
-              {config.theme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+              {config.theme === 'dark' ? <><IconMoon size={14} /> Dark Mode</> : <><IconSun size={14} /> Light Mode</>}
             </span>
             <span className="toggle-group__desc">Switch between light and dark themes</span>
           </div>
@@ -267,13 +348,13 @@ export function SettingsPanel({
               className={`segmented__option ${config.theme === 'light' ? 'segmented__option--active' : ''}`}
               onClick={() => onUpdateConfig({ theme: 'light' })}
             >
-              ☀️ Light
+              <IconSun size={12} /> Light
             </button>
             <button
               className={`segmented__option ${config.theme === 'dark' ? 'segmented__option--active' : ''}`}
               onClick={() => onUpdateConfig({ theme: 'dark' })}
             >
-              🌙 Dark
+              <IconMoon size={12} /> Dark
             </button>
           </div>
         </div>
@@ -281,7 +362,7 @@ export function SettingsPanel({
         {/* Copy to Clipboard Toggle */}
         <div className="toggle-group">
           <div className="toggle-group__label">
-            <span className="toggle-group__title">📋 Auto Copy to Clipboard</span>
+            <span className="toggle-group__title"><IconCopy size={14} /> Auto Copy to Clipboard</span>
             <span className="toggle-group__desc">Automatically copy URL after upload</span>
           </div>
           <label className="toggle-switch">
@@ -345,10 +426,10 @@ export function SettingsPanel({
 
         <div className="config-info__actions">
           <button className="btn btn--secondary" onClick={handleExport} id="export-config">
-            📤 Export Settings
+            <IconExport size={14} /> Export Settings
           </button>
           <button className="btn btn--secondary" onClick={handleImport} id="import-config">
-            📥 Import Settings
+            <IconImport size={14} /> Import Settings
           </button>
         </div>
       </div>

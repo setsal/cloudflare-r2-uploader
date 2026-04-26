@@ -1,16 +1,23 @@
 # R2 Uploader
 
-A lightweight desktop tool for quickly uploading images to Cloudflare R2 storage with drag-and-drop, auto-rename, and clipboard copy features.
+A privacy-first, minimalist desktop tool designed to help you quickly upload images to Cloudflare R2 storage.
+
+Built with a security-first mindset — all credentials are stored locally and masked by default. While optimized for image workflows (drag, drop, get URL), it supports uploading any file type to R2.
 
 ## Features
 
-- 🖱️ **Drag & Drop** — Drop images directly onto the app
-- 📋 **Auto Clipboard** — URL is automatically copied after upload
-- 🔄 **Auto Rename** — Rename to timestamp or random ID on upload
-- 👤 **Credential Profiles** — Save & switch between multiple R2 configs
-- 📜 **Upload History** — Browse and re-copy past upload URLs
-- 🖥️ **System Tray** — Minimize to tray for quick access
-- 🌐 **Cross-platform** — Windows, macOS, and Linux
+- **Drag & Drop** — Drop files directly onto the app for instant upload
+- **Click to Browse** — Or select files with a standard file picker
+- **Auto Clipboard** — Optionally copy the upload URL right after upload (Raw / Markdown / HTML)
+- **Auto Rename** — Rename files to timestamp or random ID on upload to avoid collisions
+- **Credential Profiles** — Save and switch between multiple R2 connection configs
+- **Privacy by Default** — All sensitive fields (endpoint, keys, bucket) are masked with show/hide toggle
+- **Upload History** — Browse and re-copy past upload URLs from a standalone history file
+- **Light / Dark Mode** — Switch themes from Settings
+- **Config Versioning** — Built-in schema migration for future-proof config upgrades
+- **Export / Import** — Back up and restore all settings and history as JSON
+- **System Tray** — Minimize to tray for quick access
+- **Cross-platform** — Windows, macOS, and Linux
 
 ## Quick Start
 
@@ -38,12 +45,21 @@ npm run build:linux  # Linux
 3. Click **Test Connection** to verify
 4. Switch to the **Upload** tab and start uploading!
 
+> All credential fields are masked by default. Click the eye icon to reveal values when needed.
+
+## Design Philosophy
+
+- **Image-first** — Optimized for the workflow of uploading images and getting shareable URLs
+- **Privacy & Security** — Credentials never leave your machine; all sensitive fields masked by default
+- **Minimalist** — No bloat, no accounts, no telemetry — just a fast uploader
+- **Cross-platform consistency** — Pure SVG icons, no emoji dependencies
+
 ## Tech Stack
 
 - **Electron** + **electron-vite** — Desktop framework
 - **React 18** + **TypeScript** — UI
 - **AWS SDK v3** (`@aws-sdk/client-s3`) — S3-compatible R2 uploads
-- **electron-store** — Persistent encrypted config
+- **electron-store** — Persistent local config (config + history as separate files)
 
 ## CI/CD
 
