@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'ele
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { registerIpcHandlers } from './ipc-handlers'
-import { getConfig } from './config-store'
+import { getConfig, getWindowBounds, setWindowBounds } from './config-store'
 
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
@@ -10,10 +10,13 @@ let tray: Tray | null = null
 function createWindow(): void {
   const config = getConfig()
   const isDark = config.theme !== 'light'
+  const savedBounds = getWindowBounds()
 
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 650,
+    width: savedBounds.width,
+    height: savedBounds.height,
+    x: savedBounds.x,
+    y: savedBounds.y,
     minWidth: 600,
     minHeight: 500,
     show: false,
@@ -32,6 +35,20 @@ function createWindow(): void {
       nodeIntegration: false
     }
   })
+
+  // Save window bounds on resize/move (debounced)
+  let boundsTimer: NodeJS.Timeout | null = null
+  const saveBounds = () => {
+    if (boundsTimer) clearTimeout(boundsTimer)
+    boundsTimer = setTimeout(() => {
+      if (mainWindow && !mainWindow.isMinimized() && !mainWindow.isMaximized()) {
+        const bounds = mainWindow.getBounds()
+        setWindowBounds(bounds)
+      }
+    }, 500)
+  }
+  mainWindow.on('resize', saveBounds)
+  mainWindow.on('move', saveBounds)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()

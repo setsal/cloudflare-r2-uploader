@@ -22,6 +22,31 @@ const historyStore = new Store<{
   }
 })
 
+// Window state store — persists window position & size across sessions
+export interface WindowBounds {
+  x?: number
+  y?: number
+  width: number
+  height: number
+}
+
+const windowStateStore = new Store<{
+  bounds: WindowBounds
+}>({
+  name: 'window-state',
+  defaults: {
+    bounds: { width: 800, height: 650 }
+  }
+})
+
+export function getWindowBounds(): WindowBounds {
+  return windowStateStore.get('bounds')
+}
+
+export function setWindowBounds(bounds: WindowBounds): void {
+  windowStateStore.set('bounds', bounds)
+}
+
 // ---- Config Migrations ----
 // Add new migrations here when you change the AppConfig schema.
 // Each migration transforms the config from (toVersion - 1) → toVersion.
