@@ -1,4 +1,4 @@
-import { AppConfig, UploadResult, UploadHistoryItem } from '../common/types'
+import { AppConfig, UploadResult, UploadHistoryItem, R2Config } from '../common/types'
 
 declare global {
   interface Window {
@@ -20,7 +20,7 @@ declare global {
       ) => Promise<UploadResult>
 
       // R2 connection test
-      testConnection: (profile: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>
+      testConnection: (profile: R2Config) => Promise<{ success: boolean; error?: string }>
 
       // Clipboard
       copyToClipboard: (text: string) => Promise<boolean>

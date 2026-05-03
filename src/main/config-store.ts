@@ -70,7 +70,7 @@ const migrations: Migration[] = [
 ]
 
 function runMigrations(): void {
-  const raw = configStore.get('config') as Record<string, unknown>
+  const raw = configStore.get('config') as unknown as Record<string, unknown>
   const storedVersion = (typeof raw.configVersion === 'number') ? raw.configVersion : 0
 
   if (storedVersion >= CURRENT_CONFIG_VERSION) return
@@ -86,7 +86,7 @@ function runMigrations(): void {
 
   // Merge with defaults to pick up any new fields not covered by explicit migrations
   config = { ...DEFAULT_CONFIG, ...config, configVersion: CURRENT_CONFIG_VERSION }
-  configStore.set('config', config as AppConfig)
+  configStore.set('config', config as unknown as AppConfig)
   console.log(`[config] Migration complete → v${CURRENT_CONFIG_VERSION}`)
 }
 

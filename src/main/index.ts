@@ -57,7 +57,7 @@ function createWindow(): void {
   // Minimize to tray instead of closing
   mainWindow.on('close', (event) => {
     const config = getConfig()
-    if (config.minimizeToTray && mainWindow && !app.isQuitting) {
+    if (config.minimizeToTray && mainWindow && !isQuitting) {
       event.preventDefault()
       mainWindow.hide()
     }
@@ -102,7 +102,7 @@ function createTray(): void {
     {
       label: 'Quit',
       click: () => {
-        app.isQuitting = true
+        isQuitting = true
         app.quit()
       }
     }
@@ -117,14 +117,8 @@ function createTray(): void {
   })
 }
 
-// Extend App type for isQuitting flag
-declare module 'electron' {
-  interface App {
-    isQuitting: boolean
-  }
-}
-
-app.isQuitting = false
+// Flag for quitting
+let isQuitting = false
 
 app.whenReady().then(() => {
   registerIpcHandlers()
@@ -159,5 +153,5 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', () => {
-  app.isQuitting = true
+  isQuitting = true
 })
