@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: ['nanoid'] })],
+    plugins: [externalizeDepsPlugin({ exclude: ['nanoid', '@electron-toolkit/utils', 'electron-store', 'mime-types', '@aws-sdk/client-s3'] })],
     build: {
       rollupOptions: {
         input: {
