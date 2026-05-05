@@ -1,6 +1,6 @@
-# R2 Uploader
+# Cloudflare R2 Uploader
 
-A privacy-first, minimalist desktop tool designed to help you quickly upload images to Cloudflare R2 storage.
+A **privacy-first**, **minimalist** desktop tool designed to help you quickly upload images to Cloudflare R2 storage.
 
 Built with a security-first mindset — all credentials are stored locally and masked by default. While optimized for image workflows (drag, drop, get URL), it supports uploading any file type to R2.
 
@@ -11,13 +11,14 @@ Built with a security-first mindset — all credentials are stored locally and m
 - **Auto Clipboard** — Optionally copy the upload URL right after upload (Raw / Markdown / HTML)
 - **Auto Rename** — Rename files to timestamp or random ID on upload to avoid collisions
 - **Credential Profiles** — Save and switch between multiple R2 connection configs
-- **Privacy by Default** — All sensitive fields (endpoint, keys, bucket) are masked with show/hide toggle
 - **Upload History** — Browse and re-copy past upload URLs from a standalone history file
 - **Light / Dark Mode** — Switch themes from Settings
-- **Config Versioning** — Built-in schema migration for future-proof config upgrades
 - **Export / Import** — Back up and restore all settings and history as JSON
-- **System Tray** — Minimize to tray for quick access
 - **Cross-platform** — Windows, macOS, and Linux
+
+## Screenshot
+
+![](.github/assets/main.png)
 
 ## Quick Start
 
@@ -61,14 +62,7 @@ npm run build:linux  # Linux
 - **AWS SDK v3** (`@aws-sdk/client-s3`) — S3-compatible R2 uploads
 - **electron-store** — Persistent local config (config + history as separate files)
 
-## CI/CD
 
-GitHub Actions automatically builds for all platforms on push to `main`. To create a release:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
 
 This triggers the build → package → release pipeline, creating a GitHub Release with platform installers attached.
 
