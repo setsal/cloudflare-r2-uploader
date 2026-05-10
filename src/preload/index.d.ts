@@ -1,4 +1,4 @@
-import { AppConfig, UploadResult, UploadHistoryItem, R2Config } from '../common/types'
+import { AppConfig, UploadResult, UploadHistoryItem, R2Config, ImageProcessingConfig, ImageProcessingResult } from '../common/types'
 
 declare global {
   interface Window {
@@ -24,6 +24,7 @@ declare global {
 
       // Clipboard
       copyToClipboard: (text: string) => Promise<boolean>
+      readClipboardImage: () => Promise<{ buffer: ArrayBuffer; width: number; height: number; size: number } | null>
 
       // File dialog
       openFileDialog: () => Promise<string[] | null>
@@ -31,6 +32,12 @@ declare global {
       // History
       getHistory: () => Promise<UploadHistoryItem[]>
       clearHistory: () => Promise<UploadHistoryItem[]>
+
+      // Image processing
+      processImage: (
+        fileData: { buffer: ArrayBuffer; name: string; size: number },
+        config: ImageProcessingConfig
+      ) => Promise<{ success: boolean; result?: ImageProcessingResult; error?: string }>
 
       // Theme
       updateTheme: (theme: string) => Promise<void>

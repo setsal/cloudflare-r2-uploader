@@ -193,3 +193,41 @@ export function IconInbox(props: IconProps = {}) {
     </svg>
   )
 }
+
+// Image / photo
+export function IconImage(props: IconProps = {}) {
+  const { size = 16, className } = props
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} style={{ flexShrink: 0 }}>
+      <rect x="2" y="2" width="12" height="12" rx="2" />
+      <circle cx="5.5" cy="5.5" r="1" />
+      <path d="M14 10l-3-3-7 7" />
+    </svg>
+  )
+}
+
+// Compress / squeeze
+export function IconCompress(props: IconProps = {}) {
+  const { size = 16, className } = props
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} style={{ flexShrink: 0 }}>
+      <path d="M4 2v4l4-2-4-2z" fill="currentColor" stroke="none" />
+      <path d="M12 14v-4l-4 2 4 2z" fill="currentColor" stroke="none" />
+      <path d="M2 8h12" />
+    </svg>
+  )
+}
+
+// Resize / scale
+export function IconResize(props: IconProps = {}) {
+  const { size = 16, className } = props
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} style={{ flexShrink: 0 }}>
+      <rect x="1.5" y="1.5" width="13" height="13" rx="2" strokeDasharray="3 2" />
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <path d="M12.5 8.5l-2-2" />
+      <path d="M12.5 8.5h-2v-2" />
+    </svg>
+  )
+}
+

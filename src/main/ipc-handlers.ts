@@ -1,5 +1,6 @@
 import { ipcMain, clipboard, dialog, BrowserWindow } from 'electron'
 import { uploadFile, testConnection } from './r2-client'
+import { processImage } from './image-processor'
 import {
   getConfig,
   setConfig,
@@ -14,7 +15,7 @@ import {
   exportConfigToFile,
   importConfigFromFile
 } from './config-store'
-import { UploadHistoryItem } from '../common/types'
+import { UploadHistoryItem, ImageProcessingConfig } from '../common/types'
 
 export function registerIpcHandlers() {
   // ---- Config ----
@@ -156,16 +157,36 @@ export function registerIpcHandlers() {
     return true
   })
 
+  ipcMain.handle('clipboard:read-image', () => {
+    const image = clipboard.readImage()
+    if (image.isEmpty()) return null
+
+    const pngBuffer = image.toPNG()
+    const size = image.getSize()
+    return {
+      buffer: pngBuffer.buffer.slice(
+        pngBuffer.byteOffset,
+        pngBuffer.byteOffset + pngBuffer.byteLength
+      ),
+      width: size.width,
+      height: size.height,
+      size: pngBuffer.length
+    }
+  })
+
   // ---- File dialog ----
   ipcMain.handle('dialog:open-file', async () => {
     const window = BrowserWindow.getFocusedWindow()
     if (!window) return null
 
     const result = await dialog.showOpenDialog(window, {
-      title: 'Select File(s)',
+      title: 'Select Image(s)',
       properties: ['openFile', 'multiSelections'],
       filters: [
-        { name: 'All Files', extensions: ['*'] }
+        {
+          name: 'Images',
+          extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg', 'bmp', 'tiff', 'tif', 'ico', 'heic', 'heif']
+        }
       ]
     })
 
@@ -181,4 +202,23 @@ export function registerIpcHandlers() {
   ipcMain.handle('history:clear', () => {
     return clearHistory()
   })
+
+  // ---- Image processing ----
+  ipcMain.handle(
+    'image:process',
+    async (
+      _event,
+      fileData: { buffer: ArrayBuffer; name: string; size: number },
+      config: ImageProcessingConfig
+    ) => {
+      try {
+        const buffer = Buffer.from(fileData.buffer)
+        const result = await processImage(buffer, fileData.name, config)
+        return { success: true, result }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Processing failed'
+        return { success: false, error: message }
+      }
+    }
+  )
 }

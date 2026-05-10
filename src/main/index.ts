@@ -92,7 +92,7 @@ function createTray(): void {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show R2 Uploader',
+      label: 'Show R2 Image Uploader',
       click: () => {
         mainWindow?.show()
         mainWindow?.focus()
@@ -108,7 +108,7 @@ function createTray(): void {
     }
   ])
 
-  tray.setToolTip('R2 Uploader')
+  tray.setToolTip('R2 Image Uploader')
   tray.setContextMenu(contextMenu)
 
   tray.on('double-click', () => {

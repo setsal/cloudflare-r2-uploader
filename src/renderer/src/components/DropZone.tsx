@@ -3,10 +3,11 @@ import { IconUpload } from './Icons'
 
 interface DropZoneProps {
   onFiles: (files: File[]) => void
+  onRejectNonImage?: (count: number) => void
   disabled?: boolean
 }
 
-export function DropZone({ onFiles, disabled }: DropZoneProps) {
+export function DropZone({ onFiles, onRejectNonImage, disabled }: DropZoneProps) {
   const [isDragActive, setIsDragActive] = useState(false)
 
   const handleDrag = useCallback((e: DragEvent<HTMLDivElement>) => {
@@ -36,12 +37,19 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
 
       if (disabled) return
 
-      const files = Array.from(e.dataTransfer.files)
-      if (files.length > 0) {
-        onFiles(files)
+      const allFiles = Array.from(e.dataTransfer.files)
+      const imageFiles = allFiles.filter((f) => f.type.startsWith('image/'))
+      const rejectedCount = allFiles.length - imageFiles.length
+
+      if (rejectedCount > 0 && onRejectNonImage) {
+        onRejectNonImage(rejectedCount)
+      }
+
+      if (imageFiles.length > 0) {
+        onFiles(imageFiles)
       }
     },
-    [onFiles, disabled]
+    [onFiles, onRejectNonImage, disabled]
   )
 
   const handleClick = useCallback(() => {
@@ -49,6 +57,7 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
 
     const input = document.createElement('input')
     input.type = 'file'
+    input.accept = 'image/*'
     input.multiple = true
     input.onchange = () => {
       if (input.files) {
@@ -77,12 +86,12 @@ export function DropZone({ onFiles, disabled }: DropZoneProps) {
         <IconUpload size={24} />
       </div>
       <div className="dropzone__text">
-        {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
+        {isDragActive ? 'Drop images here' : 'Drag & drop images here'}
       </div>
       <div className="dropzone__subtext">
         {isDragActive
           ? 'Release to start upload'
-          : 'or click to browse — images, documents, and more'}
+          : 'or click to browse — JPEG, PNG, WebP, AVIF, GIF, SVG'}
       </div>
     </div>
   )

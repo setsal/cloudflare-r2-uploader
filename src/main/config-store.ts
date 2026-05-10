@@ -1,6 +1,6 @@
 import Store from 'electron-store'
 import { readFileSync, writeFileSync } from 'fs'
-import { AppConfig, DEFAULT_CONFIG, CURRENT_CONFIG_VERSION, UploadHistoryItem } from '../common/types'
+import { AppConfig, DEFAULT_CONFIG, CURRENT_CONFIG_VERSION, DEFAULT_IMAGE_PROCESSING, UploadHistoryItem } from '../common/types'
 
 // Config store — stores app settings and profiles
 const configStore = new Store<{
@@ -58,15 +58,14 @@ interface Migration {
 }
 
 const migrations: Migration[] = [
-  // Example for future use:
-  // {
-  //   toVersion: 2,
-  //   migrate: (config) => {
-  //     // Add a new field with a default value
-  //     config.newField = config.newField ?? 'defaultValue'
-  //     return config
-  //   }
-  // }
+  {
+    toVersion: 2,
+    migrate: (config) => {
+      // Add imageProcessing config with defaults
+      config.imageProcessing = config.imageProcessing ?? DEFAULT_IMAGE_PROCESSING
+      return config
+    }
+  }
 ]
 
 function runMigrations(): void {

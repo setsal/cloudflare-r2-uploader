@@ -7,6 +7,31 @@ export interface R2Config {
   defaultPathPrefix: string
 }
 
+export interface ImageProcessingConfig {
+  enabled: boolean
+  mode: 'compress' | 'resize' | 'both'
+  compression: {
+    quality: number // 1-100
+  }
+  resize: {
+    percentage: number // 1-100
+  }
+  autoConfirm: boolean
+}
+
+export interface ImageProcessingResult {
+  originalSize: number
+  processedSize: number
+  processedBuffer: ArrayBuffer
+  width: number
+  height: number
+  originalWidth: number
+  originalHeight: number
+  savings: number // percentage saved (0-100)
+  format: string
+  fileName: string
+}
+
 export interface AppConfig {
   configVersion: number
   profiles: Record<string, R2Config>
@@ -16,10 +41,11 @@ export interface AppConfig {
   copyToClipboard: boolean
   theme: 'light' | 'dark'
   minimizeToTray: boolean
+  imageProcessing: ImageProcessingConfig
 }
 
 /** Bump this when you change the AppConfig schema and add a migration. */
-export const CURRENT_CONFIG_VERSION = 1
+export const CURRENT_CONFIG_VERSION = 2
 
 export interface UploadOptions {
   targetPath: string
@@ -53,6 +79,18 @@ export interface FileData {
   size: number
 }
 
+export const DEFAULT_IMAGE_PROCESSING: ImageProcessingConfig = {
+  enabled: false,
+  mode: 'compress',
+  compression: {
+    quality: 80
+  },
+  resize: {
+    percentage: 100
+  },
+  autoConfirm: false
+}
+
 export const DEFAULT_CONFIG: AppConfig = {
   configVersion: CURRENT_CONFIG_VERSION,
   profiles: {
@@ -70,7 +108,8 @@ export const DEFAULT_CONFIG: AppConfig = {
   clipboardFormat: 'raw',
   copyToClipboard: false,
   theme: 'dark',
-  minimizeToTray: true
+  minimizeToTray: true,
+  imageProcessing: DEFAULT_IMAGE_PROCESSING
 }
 
 export const SUPPORTED_IMAGE_TYPES = [

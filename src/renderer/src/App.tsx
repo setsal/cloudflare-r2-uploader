@@ -6,19 +6,32 @@ import { RenameToggle } from './components/RenameToggle'
 import { UploadProgress } from './components/UploadProgress'
 import { UploadHistory } from './components/UploadHistory'
 import { SettingsPanel } from './components/SettingsPanel'
-import { IconUpload, IconHistory, IconSettings } from './components/Icons'
+import { ImageSettingsPanel } from './components/ImageSettingsPanel'
+import { ProcessingConfirmDialog } from './components/ProcessingConfirmDialog'
+import { IconUpload, IconImage, IconHistory, IconSettings, IconCopy } from './components/Icons'
 import { useConfig } from './hooks/useConfig'
 import { useUpload } from './hooks/useUpload'
 
-type TabId = 'upload' | 'history' | 'settings'
+type TabId = 'upload' | 'image' | 'history' | 'settings'
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState<TabId>('upload')
   const { config, loading, updateConfig, setProfile, deleteProfile } = useConfig()
-  const { uploading, results, uploadFiles, clearResults } = useUpload()
+  const {
+    uploading,
+    results,
+    processing,
+    processingResults,
+    processFiles,
+    uploadProcessedFiles,
+    uploadFiles,
+    clearResults,
+    clearProcessing
+  } = useUpload()
   const { addToast } = useToast()
 
   const [uploadPath, setUploadPath] = useState('')
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
 
   // Apply theme to document root and update native title bar
   useEffect(() => {
@@ -28,6 +41,25 @@ function AppContent() {
 
   // Use the config's default path if user hasn't overridden
   const effectivePath = uploadPath || config.profiles[config.activeProfile]?.defaultPathPrefix || ''
+
+  const handleUploadComplete = useCallback(
+    (uploadResults: { success: boolean }[]) => {
+      const successCount = uploadResults.filter((r) => r.success).length
+      const failCount = uploadResults.length - successCount
+
+      if (successCount > 0) {
+        const clipboardMsg = config.copyToClipboard ? ' — URL copied to clipboard' : ''
+        addToast(
+          `${successCount} image${successCount > 1 ? 's' : ''} uploaded!${clipboardMsg}`,
+          'success'
+        )
+      }
+      if (failCount > 0) {
+        addToast(`${failCount} upload${failCount > 1 ? 's' : ''} failed`, 'error')
+      }
+    },
+    [config, addToast]
+  )
 
   const handleFiles = useCallback(
     async (files: File[]) => {
@@ -41,27 +73,86 @@ function AppContent() {
 
       clearResults()
 
-      const uploadResults = await uploadFiles(files, {
-        targetPath: effectivePath,
-        autoRename: config.autoRename
-      })
+      const proc = config.imageProcessing
 
-      const successCount = uploadResults.filter((r) => r.success).length
-      const failCount = uploadResults.length - successCount
+      if (proc.enabled) {
+        // Process images first
+        const processed = await processFiles(files, proc)
 
-      if (successCount > 0) {
-        const clipboardMsg = config.copyToClipboard ? ' — URL copied to clipboard' : ''
-        addToast(
-          `${successCount} file${successCount > 1 ? 's' : ''} uploaded!${clipboardMsg}`,
-          'success'
-        )
-      }
-      if (failCount > 0) {
-        addToast(`${failCount} upload${failCount > 1 ? 's' : ''} failed`, 'error')
+        if (proc.autoConfirm) {
+          // Auto-confirm: upload processed images directly
+          const uploadResults = await uploadProcessedFiles(processed, {
+            targetPath: effectivePath,
+            autoRename: config.autoRename
+          })
+          handleUploadComplete(uploadResults)
+        } else {
+          // Show confirmation dialog
+          setShowConfirmDialog(true)
+        }
+      } else {
+        // No processing: upload directly
+        const uploadResults = await uploadFiles(files, {
+          targetPath: effectivePath,
+          autoRename: config.autoRename
+        })
+        handleUploadComplete(uploadResults)
       }
     },
-    [config, effectivePath, uploadFiles, clearResults, addToast]
+    [
+      config,
+      effectivePath,
+      processFiles,
+      uploadProcessedFiles,
+      uploadFiles,
+      clearResults,
+      handleUploadComplete,
+      addToast
+    ]
   )
+
+  const handleRejectNonImage = useCallback(
+    (count: number) => {
+      addToast(
+        `${count} non-image file${count > 1 ? 's' : ''} rejected — only images are supported`,
+        'error'
+      )
+    },
+    [addToast]
+  )
+
+  const handlePasteFromClipboard = useCallback(async () => {
+    try {
+      const imageData = await window.api.readClipboardImage()
+      if (!imageData) {
+        addToast('No image found in clipboard', 'error')
+        return
+      }
+
+      // Create a File object from the clipboard image buffer
+      const blob = new Blob([imageData.buffer], { type: 'image/png' })
+      const fileName = `clipboard-${Date.now()}.png`
+      const file = new File([blob], fileName, { type: 'image/png' })
+
+      handleFiles([file])
+    } catch {
+      addToast('Failed to read clipboard image', 'error')
+    }
+  }, [addToast, handleFiles])
+
+  const handleConfirmUpload = useCallback(async () => {
+    setShowConfirmDialog(false)
+    const uploadResults = await uploadProcessedFiles(processingResults, {
+      targetPath: effectivePath,
+      autoRename: config.autoRename
+    })
+    handleUploadComplete(uploadResults)
+  }, [processingResults, effectivePath, config.autoRename, uploadProcessedFiles, handleUploadComplete])
+
+  const handleCancelProcessing = useCallback(() => {
+    setShowConfirmDialog(false)
+    clearProcessing()
+  }, [clearProcessing])
 
   if (loading) {
     return (
@@ -75,6 +166,7 @@ function AppContent() {
 
   const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
     { id: 'upload', label: 'Upload', icon: <IconUpload size={14} /> },
+    { id: 'image', label: 'Image', icon: <IconImage size={14} /> },
     { id: 'history', label: 'History', icon: <IconHistory size={14} /> },
     { id: 'settings', label: 'Settings', icon: <IconSettings size={14} /> }
   ]
@@ -89,7 +181,7 @@ function AppContent() {
       <div className="app-header">
         <div className="app-header__title">
           <div className="app-header__title-icon" />
-          R2 Uploader
+          R2 Image Uploader
         </div>
         <div className="app-header__actions">
           <span
@@ -122,7 +214,22 @@ function AppContent() {
       <div className="app-content">
         {activeTab === 'upload' && (
           <>
-            <DropZone onFiles={handleFiles} disabled={uploading} />
+            <DropZone
+              onFiles={handleFiles}
+              onRejectNonImage={handleRejectNonImage}
+              disabled={uploading || processing}
+            />
+
+            <div className="upload-actions">
+              <button
+                className="btn btn--secondary"
+                onClick={handlePasteFromClipboard}
+                disabled={uploading || processing}
+                id="paste-clipboard"
+              >
+                <IconCopy size={14} /> Paste from Clipboard
+              </button>
+            </div>
 
             <div className="upload-controls">
               <PathInput
@@ -140,6 +247,10 @@ function AppContent() {
           </>
         )}
 
+        {activeTab === 'image' && (
+          <ImageSettingsPanel config={config} onUpdateConfig={updateConfig} />
+        )}
+
         {activeTab === 'history' && <UploadHistory />}
 
         {activeTab === 'settings' && (
@@ -151,6 +262,16 @@ function AppContent() {
           />
         )}
       </div>
+
+      {/* Processing Confirmation Dialog */}
+      {showConfirmDialog && (
+        <ProcessingConfirmDialog
+          results={processingResults}
+          processing={processing}
+          onConfirm={handleConfirmUpload}
+          onCancel={handleCancelProcessing}
+        />
+      )}
     </div>
   )
 }

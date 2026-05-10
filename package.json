@@ -1,7 +1,7 @@
 {
-  "name": "cloudflare-r2-uploader",
+  "name": "cloudflare-r2-image-uploader",
   "version": "1.0.0",
-  "description": "A desktop tool for quickly uploading images to Cloudflare R2 storage",
+  "description": "A minimalist desktop tool for quickly uploading images to Cloudflare R2 storage with compression and resize",
   "main": "./out/main/index.js",
   "author": "",
   "license": "MIT",
@@ -26,7 +26,8 @@
     "@electron-toolkit/utils": "^3.0.0",
     "electron-store": "^8.2.0",
     "mime-types": "^2.1.35",
-    "nanoid": "^5.0.9"
+    "nanoid": "^5.0.9",
+    "sharp": "^0.33.0"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.4",
@@ -42,14 +43,18 @@
     "vite": "^7.2.4"
   },
   "build": {
-    "appId": "com.r2uploader.app",
-    "productName": "R2 Uploader",
+    "appId": "com.r2-image-uploader.app",
+    "productName": "R2 Image Uploader",
     "directories": {
       "buildResources": "build"
     },
     "files": [
       "out/**/*",
       "!node_modules/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/sharp/**/*",
+      "node_modules/@img/**/*"
     ],
     "win": {
       "target": [

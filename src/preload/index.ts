@@ -24,6 +24,7 @@ const api = {
 
   // Clipboard
   copyToClipboard: (text: string) => ipcRenderer.invoke('clipboard:copy', text),
+  readClipboardImage: () => ipcRenderer.invoke('clipboard:read-image'),
 
   // File dialog
   openFileDialog: () => ipcRenderer.invoke('dialog:open-file'),
@@ -31,6 +32,12 @@ const api = {
   // History
   getHistory: () => ipcRenderer.invoke('history:get'),
   clearHistory: () => ipcRenderer.invoke('history:clear'),
+
+  // Image processing
+  processImage: (
+    fileData: { buffer: ArrayBuffer; name: string; size: number },
+    config: Record<string, unknown>
+  ) => ipcRenderer.invoke('image:process', fileData, config),
 
   // Theme
   updateTheme: (theme: string) => ipcRenderer.invoke('theme:update', theme),

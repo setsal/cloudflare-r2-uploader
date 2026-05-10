@@ -1,24 +1,25 @@
-# Cloudflare R2 Uploader
+# Cloudflare R2 Image Uploader
 
-A **privacy-first**, **minimalist** desktop tool designed to help you quickly upload images to Cloudflare R2 storage.
+A **privacy-first**, **minimalist** desktop application for quickly uploading images to Cloudflare R2 storage.
 
-Built with a security-first mindset — all credentials are stored locally and masked by default. While optimized for image workflows (drag, drop, get URL), it supports uploading any file type to R2.
+Drag, drop, get URL — designed for bloggers, developers, and content creators who need a fast, simple way to host images on Cloudflare R2 with zero friction.
 
-## Features
+## Key Features
 
-- **Drag & Drop** — Drop files directly onto the app for instant upload
-- **Click to Browse** — Or select files with a standard file picker
-- **Auto Clipboard** — Optionally copy the upload URL right after upload (Raw / Markdown / HTML)
-- **Auto Rename** — Rename files to timestamp or random ID on upload to avoid collisions
+- **Image-Only Upload** — Focused on images (JPEG, PNG, WebP, AVIF, GIF, SVG, and more)
+- **Drag & Drop** — Drop images directly onto the app for instant upload
+- **Paste from Clipboard** — One-click paste of screenshots or copied images
+- **Image Compression** — Quality-based compression powered by sharp (JPEG, PNG, WebP, AVIF)
+- **Image Resize** — Percentage-based scaling with quick presets (25%, 50%, 75%, 100%)
+- **Pre-Upload Preview** — See estimated compressed size and savings before uploading
+- **Auto-Confirm** — Optionally skip the confirmation dialog for a fully automatic workflow
+- **Auto Clipboard** — Copy the upload URL automatically (Raw / Markdown / HTML formats)
+- **Auto Rename** — Rename to timestamp or random ID to avoid filename collisions
 - **Credential Profiles** — Save and switch between multiple R2 connection configs
-- **Upload History** — Browse and re-copy past upload URLs from a standalone history file
+- **Upload History** — Browse and re-copy past upload URLs
 - **Light / Dark Mode** — Switch themes from Settings
 - **Export / Import** — Back up and restore all settings and history as JSON
 - **Cross-platform** — Windows, macOS, and Linux
-
-## Screenshot
-
-![](.github/assets/main.png)
 
 ## Quick Start
 
@@ -48,23 +49,31 @@ npm run build:linux  # Linux
 
 > All credential fields are masked by default. Click the eye icon to reveal values when needed.
 
+## Image Processing
+
+Go to the **Image** tab to configure processing options:
+
+- **Compression** — Adjust quality (1-100%) to reduce file size while preserving visual fidelity
+- **Resize** — Scale images by percentage before uploading
+- **Both** — Apply compression and resize together for maximum size reduction
+- **Auto-confirm** — Skip the preview dialog and upload processed images directly
+
+Processing is **off by default** — enable it only when you need it.
+
 ## Design Philosophy
 
-- **Image-first** — Optimized for the workflow of uploading images and getting shareable URLs
+- **Image-first** — Purpose-built for the image upload workflow
 - **Privacy & Security** — Credentials never leave your machine; all sensitive fields masked by default
-- **Minimalist** — No bloat, no accounts, no telemetry — just a fast uploader
+- **Minimalist** — No bloat, no accounts, no telemetry — just a fast image uploader
 - **Cross-platform consistency** — Pure SVG icons, no emoji dependencies
 
 ## Tech Stack
 
 - **Electron** + **electron-vite** — Desktop framework
 - **React 18** + **TypeScript** — UI
+- **sharp** — High-performance image compression and resize (libvips)
 - **AWS SDK v3** (`@aws-sdk/client-s3`) — S3-compatible R2 uploads
 - **electron-store** — Persistent local config (config + history as separate files)
-
-
-
-This triggers the build → package → release pipeline, creating a GitHub Release with platform installers attached.
 
 ## License
 
