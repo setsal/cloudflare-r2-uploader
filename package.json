@@ -44,7 +44,7 @@
   },
   "build": {
     "appId": "com.r2-image-uploader.app",
-    "productName": "R2 Image Uploader",
+    "productName": "Cloudflare R2 Image Uploader",
     "directories": {
       "buildResources": "build"
     },
@@ -55,6 +55,12 @@
     "asarUnpack": [
       "node_modules/sharp/**/*",
       "node_modules/@img/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "build/icons/256x256.png",
+        "to": "icon.png"
+      }
     ],
     "win": {
       "target": [

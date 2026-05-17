@@ -4,6 +4,14 @@ import { is } from '@electron-toolkit/utils'
 import { registerIpcHandlers } from './ipc-handlers'
 import { getConfig, getWindowBounds, setWindowBounds } from './config-store'
 
+/** Resolve the app icon path (works in both dev and production) */
+function getIconPath(): string {
+  if (is.dev) {
+    return join(__dirname, '../../build/icons/256x256.png')
+  }
+  return join(process.resourcesPath, 'icon.png')
+}
+
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 
@@ -20,6 +28,7 @@ function createWindow(): void {
     minWidth: 600,
     minHeight: 500,
     show: false,
+    icon: getIconPath(),
     frame: false,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
@@ -77,22 +86,12 @@ function createWindow(): void {
 }
 
 function createTray(): void {
-  // Create a simple tray icon (16x16 colored square)
-  const icon = nativeImage.createEmpty()
-  tray = new Tray(icon)
-
-  // Create a 16x16 icon programmatically
-  const iconData = nativeImage.createFromBuffer(
-    Buffer.alloc(16 * 16 * 4, 0),
-    { width: 16, height: 16 }
-  )
-
-  // Use a simple colored tray icon
-  tray.setImage(iconData)
+  const trayIcon = nativeImage.createFromPath(getIconPath()).resize({ width: 16, height: 16 })
+  tray = new Tray(trayIcon)
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show R2 Image Uploader',
+      label: 'Show Cloudflare R2 Image Uploader',
       click: () => {
         mainWindow?.show()
         mainWindow?.focus()
@@ -108,7 +107,7 @@ function createTray(): void {
     }
   ])
 
-  tray.setToolTip('R2 Image Uploader')
+  tray.setToolTip('Cloudflare R2 Image Uploader')
   tray.setContextMenu(contextMenu)
 
   tray.on('double-click', () => {

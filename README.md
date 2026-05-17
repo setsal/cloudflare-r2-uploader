@@ -1,16 +1,32 @@
-# Cloudflare R2 Image Uploader
+<p align="center">
+  <img src=".github/icon.png" alt="Cloudflare R2 Image Uploader" width="128" />
+</p>
 
-A **privacy-first**, **minimalist** desktop application for quickly uploading images to Cloudflare R2 storage.
+<h1 align="center">Cloudflare R2 Image Uploader</h1>
 
-Drag, drop, get URL — designed for bloggers, developers, and content creators who need a fast, simple way to host images on Cloudflare R2 with zero friction.
+<p align="center">
+  A <strong>privacy-first</strong>, <strong>minimalist</strong> desktop application for uploading images to Cloudflare R2 storage — with <strong>built-in compression and resize</strong>, so every image is optimized before it ever leaves your machine.
+</p>
+
+<p align="center">
+  Drag, drop, compress, get URL. One app handles everything — no external tools, no online services, no extra steps. Designed for bloggers, developers, and content creators who want fast, optimized image hosting on Cloudflare R2 with zero friction.
+</p>
+
+<p align="left">
+  <a href="README.zhtw.md">中文</a>
+</p>
+
+<p align="center">
+  <img src=".github/assets/main.png" alt="App Screenshot" width="600" />
+</p>
 
 ## Key Features
 
 - **Image-Only Upload** — Focused on images (JPEG, PNG, WebP, AVIF, GIF, SVG, and more)
 - **Drag & Drop** — Drop images directly onto the app for instant upload
 - **Paste from Clipboard** — One-click paste of screenshots or copied images
-- **Image Compression** — Quality-based compression powered by sharp (JPEG, PNG, WebP, AVIF)
-- **Image Resize** — Percentage-based scaling with quick presets (25%, 50%, 75%, 100%)
+- **Built-in Compression** — Quality-based compression powered by sharp — optimize images in one step, no external tools needed
+- **Built-in Resize** — Percentage-based scaling with quick presets (25%, 50%, 75%, 100%)
 - **Pre-Upload Preview** — See estimated compressed size and savings before uploading
 - **Auto-Confirm** — Optionally skip the confirmation dialog for a fully automatic workflow
 - **Auto Clipboard** — Copy the upload URL automatically (Raw / Markdown / HTML formats)
@@ -47,8 +63,6 @@ npm run build:linux  # Linux
 3. Click **Test Connection** to verify
 4. Switch to the **Upload** tab and start uploading!
 
-> All credential fields are masked by default. Click the eye icon to reveal values when needed.
-
 ## Image Processing
 
 Go to the **Image** tab to configure processing options:
@@ -65,7 +79,6 @@ Processing is **off by default** — enable it only when you need it.
 - **Image-first** — Purpose-built for the image upload workflow
 - **Privacy & Security** — Credentials never leave your machine; all sensitive fields masked by default
 - **Minimalist** — No bloat, no accounts, no telemetry — just a fast image uploader
-- **Cross-platform consistency** — Pure SVG icons, no emoji dependencies
 
 ## Tech Stack
 

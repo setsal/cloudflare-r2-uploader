@@ -178,10 +178,10 @@ body {
 }
 
 .app-header__title-icon {
-  width: 16px;
-  height: 16px;
-  background: var(--accent-gradient);
+  width: 18px;
+  height: 18px;
   border-radius: 4px;
+  object-fit: contain;
 }
 
 .app-header__actions {

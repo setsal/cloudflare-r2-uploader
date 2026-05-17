@@ -11,6 +11,7 @@ import { ProcessingConfirmDialog } from './components/ProcessingConfirmDialog'
 import { IconUpload, IconImage, IconHistory, IconSettings, IconCopy } from './components/Icons'
 import { useConfig } from './hooks/useConfig'
 import { useUpload } from './hooks/useUpload'
+import appIcon from './assets/app-icon.png'
 
 type TabId = 'upload' | 'image' | 'history' | 'settings'
 
@@ -180,8 +181,8 @@ function AppContent() {
       {/* Title Bar Area */}
       <div className="app-header">
         <div className="app-header__title">
-          <div className="app-header__title-icon" />
-          R2 Image Uploader
+          <img src={appIcon} alt="" className="app-header__title-icon" />
+          Cloudflare R2 Image Uploader
         </div>
         <div className="app-header__actions">
           <span
