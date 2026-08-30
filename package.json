@@ -49,8 +49,7 @@
       "buildResources": "build"
     },
     "files": [
-      "out/**/*",
-      "!node_modules/**/*"
+      "out/**/*"
     ],
     "asarUnpack": [
       "node_modules/sharp/**/*",
